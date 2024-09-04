@@ -66,7 +66,8 @@ for epoch in range(200):
         target_data = target_data.float().to(device).cuda()
         optimizer.zero_grad()
         imp= model(input_data)
-        correlation_imp = correlation_imp + pearson_correlation(imp[:, :, 0], target_data[:, :,1])##改
+        correlation_imp = correlation_imp + pearson_correlation(imp[:, :, 0], target_data[:, :,1])##
+        ##target[:,:,0]means vs,target[:,:,1]means vp,target[:,:,2]means imp,here is single for vp
         loss_imp = criterion(imp[:, :, 0], target_data[:, :,1]) ##改
         loss = loss_imp
         train_loss +=loss.item()

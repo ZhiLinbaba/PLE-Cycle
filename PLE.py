@@ -28,10 +28,10 @@ def pearson_correlation(tensor1, tensor2):
     return correlation
 
 
-input_train_folder = 'D:/Code/python/多属性反演/Dataset/Seam_norm_t/seismic'
-target_train_folder = 'D:/Code/python/多属性反演/Dataset/Seam_norm_t/attribute'
-input_val_folder = 'D:/Code/python/多属性反演/Dataset/val/seismic'
-target_val_folder = 'D:/Code/python/多属性反演/Dataset/val/attribute'
+input_train_folder = 'D:/Code/python/多属性反演/Dataset/Seam_norm_t/seismic'  ##path to change
+target_train_folder = 'D:/Code/python/多属性反演/Dataset/Seam_norm_t/attribute'##path to change
+input_val_folder = 'D:/Code/python/多属性反演/Dataset/val/seismic'##path to change
+target_val_folder = 'D:/Code/python/多属性反演/Dataset/val/attribute'##path to change
 
 input_train_data = []
 target_train_data = []
@@ -69,7 +69,7 @@ criterion = nn.MSELoss(reduction='mean')
 writer = SummaryWriter()
 
 min_loss=10
-for epoch in range(200):
+for epoch in range(130):
     train_loss = 0.0
     train_vs_loss=0
     train_vp_loss=0
@@ -84,7 +84,7 @@ for epoch in range(200):
         vs, vp ,imp= model(input_data)
         # imp = model(input_data)
 
-        loss_vs =criterion(vs[:,:,0], target_data[:,:,0])
+        loss_vs =criterion(vs[:,:,0], target_data[:,:,0]) ##target[:,:,0]means vs,target[:,:,1]means vp,target[:,:,2]means imp
         loss_vp = criterion(vp[:,:,0], target_data[:,:,1])
         loss_imp = criterion(imp[:,:,0], target_data[:,:,2])
         loss = (loss_vs + loss_vp  + loss_imp )/3
@@ -139,8 +139,8 @@ for epoch in range(200):
         ##
         if (val_loss / len(dataloader_val) < min_loss):
             min_loss =val_loss / len(dataloader_val)
-            torch.save(model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/多属性/PLE-best')
-            print(epoch,(val_loss / len(dataloader_val)))
-        torch.save(model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/多属性/PLE{epoch}')
+            torch.save(model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/多属性/PLE-best')##path to save model_pt
+        #     print(epoch,(val_loss / len(dataloader_val)))
+        # torch.save(model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/多属性/PLE{epoch}')
     # scheduler.step()
 writer.close()

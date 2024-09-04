@@ -84,7 +84,7 @@ dataloader_val= torch.utils.data.DataLoader(val_dataset, batch_size=8, shuffle=T
 
 in_model =c1l1_mini.BidirectionalLSTM(input_size=1, hidden_size=16,  output_size=1,num_layers=1)
 for_model =lstm_1.BidirectionalLSTM(input_size=1,hidden_size=16,num_layers=1,output_size=1)
-# model.load_state_dict(torch.load('c1l1_pt/Transformer/100'))
+
 
 in_model.cuda()
 for_model.cuda()
@@ -103,7 +103,7 @@ for epoch in range(200):
     train_loss = 0.0
 
     for input, target in dataloader_train:
-        #训练反演网络
+
 
         input= input.float().to(device).cuda()
         target = target.float().to(device).cuda()
@@ -112,6 +112,7 @@ for epoch in range(200):
         output_pre=in_model(input)
         input_res=for_model(output_pre)
         loss_in = criterion(output_pre[:, :, 0], target[:, :, 1])##三处target改
+        ##target[:,:,0]means vs,target[:,:,1]means vp,target[:,:,2]means imp,here is single for vp
         loss_cycle_in=criterion(input_res[:, :, 0], input[:, :, 0])
 
         input_pre=for_model(target[:, :, 1].unsqueeze(-1))##三处target改
@@ -131,7 +132,7 @@ for epoch in range(200):
         loss_un=criterion(x_u.unsqueeze(-1),rec_x_u)
 
         loss=loss_for*0.1+loss_in*1+loss_cycle_for*0.1+loss_cycle_in*0.1+0.1*loss_un
-        # loss = loss_for * 0.1 + loss_in * 1 + 0.1 * loss_un #改
+
         train_loss +=loss.item()
         loss.backward()
         optimizer.step()
@@ -146,17 +147,17 @@ for epoch in range(200):
             target_data = target_data.float().to(device).cuda()
             imp = in_model(input_data)
             correlation_imp = correlation_imp + pearson_correlation(imp[:, :, 0], target_data[:, :, 1]) ##target要改
-            loss_imp = criterion(imp[:, :, 0], target_data[:, :, 1])  ##target要改
+            loss_imp = criterion(imp[:, :, 0], target_data[:, :, 1])
             val_loss += loss_imp.item()
 
         writer.add_scalars('Loss', {'val_loss': val_loss / len(dataloader_val)}, epoch)
         writer.add_scalars('imp_pear', {'val': correlation_imp / len(dataloader_val)}, epoch)
         if (val_loss/len(dataloader_val) < min_loss):
             min_loss =(val_loss / len(dataloader_val))
-            torch.save(in_model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/单属性+半监督/vp-best') ##target要改
+            torch.save(in_model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/单属性+半监督/vp-best')
             print(epoch,(val_loss / len(dataloader_val)))
 
-        torch.save(in_model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/单属性+半监督/vp{epoch}') ##target要改
+        torch.save(in_model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/单属性+半监督/vp{epoch}')
     # # scheduler.step()
 
 writer.close()

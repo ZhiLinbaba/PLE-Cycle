@@ -35,7 +35,7 @@ std = [920.264,1103.41710,3129.3345]  ## std of vs vp imp
 data_range=[2965.5173,3310.0,12338.255]## datarange of vs vp imp
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-unlabel=np.load("D:/Code/python/多属性反演/Synthetic seismic records/Seam/30Hz_1000sample.npy") ##unlabel data load
+unlabel=np.load("D:/Code/python/多属性反演/Synthetic seismic records/Seam/30Hz_1000sample.npy") ##path to unlabel data load
 unlabel=z_score_normalization(unlabel) #unlabel data normalized
 
 unlabel_transposed = unlabel.T
@@ -50,7 +50,7 @@ unlabel_dataloader = iter(DataLoader(unlabel_dataset, batch_size=batch_size, shu
 
 
 
-input_train_folder = 'D:/Code/python/多属性反演/Dataset/Seam_norm_t/seismic'
+input_train_folder = 'D:/Code/python/多属性反演/Dataset/Seam_norm_t/seismic' ##path to change
 target_train_folder = 'D:/Code/python/多属性反演/Dataset/Seam_norm_t/attribute'
 input_val_folder = 'D:/Code/python/多属性反演/Dataset/val/seismic'
 target_val_folder = 'D:/Code/python/多属性反演/Dataset/val/attribute'
@@ -113,7 +113,7 @@ for epoch in range(130):
         loss_in = (criterion(output_pre_1[:, :, 0], target[:, :, 0])+\
                   criterion(output_pre_2[:, :, 0], target[:, :, 1])+\
                   criterion(output_pre_3[:, :, 0], target[:, :, 2]))/3
-
+        ##target[:,:,0]means vs,target[:,:,1]means vp,target[:,:,2]means imp
         loss_cycle_in=criterion(input_res[:, :, 0], input[:, :, 0])
 
 #       #train forward network
@@ -176,7 +176,7 @@ for epoch in range(130):
         ##Model save   auto save the model of lowest loss of validation set as PLE-best
         if (val_loss/len(dataloader_val) < min_loss):
             min_loss =(val_loss / len(dataloader_val))
-            torch.save(in_model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/多属性+半监督/PLE-test')
+            torch.save(in_model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/多属性+半监督/PLE-test')##path to save model_pt
             print(epoch,(val_loss / len(dataloader_val)))
         # if ((epoch%10) == 0):
         torch.save(in_model.state_dict(), f'D:/Code/python/多属性反演/c1l1_mini_pt/SEAM/多属性+半监督/PLE{epoch}')
